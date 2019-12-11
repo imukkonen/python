@@ -8,6 +8,7 @@ from datetime import datetime
 from flask import render_template, request, redirect, url_for
 from Tables import app
 import win32com.client
+from Tables.count import count
 
 Excel = win32com.client.Dispatch("Excel.Application")
 month=0
@@ -45,10 +46,33 @@ def main():
                months=months,
                message=message
                 )
+
+@app.route('/wagecount', methods=['post', 'get'])
+def wagecount():
+    """Pääsivusto."""
+    global wb
+    global month
+  # kuukauden valinta ja tarkastus, että palkka on laskettu
+    message='Valitse kuukausi'
+    month=datetime.now().month
+    if request.method == 'POST':
+        month_s = int(request.form.get('month_select'))
+        if month_s < month:
+            month=month_s
+            count(month)
+            message='Palkka laskittu ja on tiedostossa Laskelma'+str(month)+'2019'
+        else:
+            message='Valittu kuukausi ei vielä tullut loppuun'
             
-    
-
-
+    return render_template(
+              'wagecount.html',
+               title='Palkinnon laske',
+               text='Laskelma',
+               months=months,
+               message=message
+                )
+            
+  
 @app.route('/worker/<month>', methods=['GET', 'POST'])
 def worker(month):
     """Renders työntekijän sivusto."""

@@ -29,6 +29,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="runserver.py" />
+    <Compile Include="Tables\count.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Tables\__init__.py" />
     <Compile Include="Tables\views.py" />
   </ItemGroup>
@@ -65,6 +68,7 @@
     <Content Include="Tables\static\scripts\respond.min.js" />
     <Content Include="Tables\static\scripts\_references.js" />
     <Content Include="Tables\templates\about.html" />
+    <Content Include="Tables\templates\wagecount.html" />
     <Content Include="Tables\templates\paylist.html" />
     <Content Include="Tables\templates\main.html" />
     <Content Include="Tables\templates\worker.html" />
