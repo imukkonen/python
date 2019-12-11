@@ -5,39 +5,79 @@
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 <p>Valitse</p>
-<form class="form-inline" method="POST" >
+<form class="form-inline" method="POST">
     <div class="form-group">
         <div class="input-group">
-            <span class="input-group-addon">Valitse</span>
+            <span class="input-group-addon">Palkansaaja</span>
             <select name="wr_select" class="selectpicker form-control">
                 {% for item in ids %}
                 <option value="{{ item }}">{{ names.get(item) }}</option>
                 {% endfor %}
             </select>
         </div>
-        <button type="submit" class="btn btn-default">Laske</button>
+        <button type="submit" class="btn btn-default">Katso laskelma</button>
     </div>
 </form>
+<p>{{virhe}}</p>
+{% if id and virhe=='' %}
+<div class="w-75 p-3" style="background-color: darkgray">
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th>Id nro: {{id }}</th>
+                <th></th>
+                <th>Sukunimi: {{name}} </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Tuntipalkka:</td>
+                <td>{{wage_h}} &euro;</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Tyotunnit kuukaudessa:</td>
+                <td>{{hours}}</td>
+                <td>palkka:</td>
+                <td>{{wage}} &euro;</td>
+            </tr>
+            <tr>
+                <td>Yovuoron tunnit:</td>
+                <td>{{night_h}}</td>
+                <td>yovuoron palkkalisays:</td>
+                <td>{{wage_n}} &euro;</td>
+            </tr>
+            <tr>
+                <td>Kuukauden keskituottavuus:</td>
+                <td>{{product}} %</td>
+                <td>tuottavuuden palkkalisays:</td>
+                <td>{{wage_p}} &euro;</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Kuukauden verollinen palkka: </td>
+                <td>{{wage_t}} &euro;</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+    {% endif %}
 
-{% if id %}
-    <p>Id nro: {{id }}, Sukunimi: {{name}}</p>
-    <p>Tuntipalkka: {{wage_h}}</p>
-    <p>Tyotunnit kuukaudessa: {{hours}}, palkka: {{wage}}</p>
-    <p>Yovuoron tunnit: {{night_h}}, yovuoron palkkalisays: {{wage_n}}</p>
-    <p>Kuukauden keskituottavuus: {{product}}, tuottavuuden palkkalisays: {{wage_p}}</p>
-    <p>Kuukauden verollinen palkka: {{wage_t}}</p>
-{% endif %}
+    <address>
+        Talotie 12,<br />
+        56218 Nokia<br />
+        <abbr title="Phone">P:</abbr>
+        0401111111
+        <abbr title="Fax">F:</abbr>
+        0911111111
+    </address>
 
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
+    <address>
+        <strong>Support:</strong>   <a href="mailto:Support@varaosat.fi">Support@varaosat.fi</a><br />
+        <strong>Marketing:</strong> <a href="mailto:Marketing@varaosat.fi">Marketing@varaosat.fi</a>
+    </address>
 
-<address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
-
-{% endblock %}
+    {% endblock %}

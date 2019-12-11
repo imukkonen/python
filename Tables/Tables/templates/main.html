@@ -5,17 +5,17 @@
 <h2>{{ title }}.</h2>
 <h3>{{ text }}</h3>
 <p>Valitse</p>
-<form class="form-inline" method="POST" >
+<form class="form-inline" method="POST">
     <div class="form-group">
         <div class="input-group">
-            <span class="input-group-addon">Valitse</span>
+            <span class="input-group-addon">Kuukausi</span>
             <select name="month_select" class="selectpicker form-control">
                 {% for item in months.keys() %}
                 <option value="{{ item }}">{{ months.get(item) }}</option>
                 {% endfor %}
             </select>
         </div>
-        <button type="submit" class="btn btn-default">Laske</button>
+        <button type="submit" class="btn btn-default">Valitse</button>
     </div>
 </form>
 
@@ -24,15 +24,17 @@
     {% endif %}
 
 <address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
+    Talotie 12,<br />
+    56218 Nokia<br />
     <abbr title="Phone">P:</abbr>
-    425.555.0100
+    0401111111
+    <abbr title="Fax">F:</abbr>
+    0911111111
 </address>
 
 <address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
+    <strong>Support:</strong>   <a href="mailto:Support@varaosat.fi">Support@varaosat.fi</a><br />
+    <strong>Marketing:</strong> <a href="mailto:Marketing@varaosat.fi">Marketing@varaosat.fi</a>
 </address>
 
 {% endblock %}

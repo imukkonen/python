@@ -8,24 +8,46 @@ from datetime import datetime
 from flask import render_template, request, redirect, url_for
 from Tables import app
 import win32com.client
-from Tables.count import count
+from Tables.count import count, sh_exist
 
 Excel = win32com.client.Dispatch("Excel.Application")
 month=0
 months={1:'tammikuu', 2: 'helmikuu', 3: 'maaliskuu', 4:'huhtikuu', 5:'toukokuu', 6:'kesäkuu', 7:'heinäkuu', 8:'elokuu',9:'syyskuu', 10:'lokakuu',11:'marraskuu', 12:'joulukuu'}
 
-@app.route('/home')
-def home():
-    """Renders the home page."""
-    return render_template(
-        'index.html',
-        title='Home Page',
-        year=datetime.now().year,
-    )
-
+@app.route('/home', methods=['post', 'get'])
 @app.route('/', methods=['post', 'get'])
-def main():
+def home():
     """Pääsivusto."""
+    global wb
+    global month
+
+  # kuukauden valinta ja tarkastus, että kuukausi on jo mennyt ja palkka saa laskinta
+    message='Valitse kuukausi'
+    month=datetime.now().month
+    if request.method == 'POST':
+        month_s = int(request.form.get('month_select'))
+        if month_s < month:
+            month=month_s
+            lb_name='Laskelma_'+str(month)+'2019.xlsx'  #palkan excel kirjan nimi kuukaden mukaan
+            lb = Excel.Workbooks.Open(lb_name)          # avaa excel kirja
+            cc = lb.Sheets.Count
+            if cc==1:
+                count(month)
+            message='Palkka laskittu ja on tiedostossa Laskelma'+str(month)+'2019.xlsx'
+        else:
+            message='Valittu kuukausi ei vielä tullut loppuun'
+            
+    return render_template(
+              'wagecount.html',
+               title='Palkinnon laske',
+               text='Laskelma',
+               months=months,
+               message=message
+                )
+
+@app.route('/wpages', methods=['post', 'get'])
+def wpages():
+    """Workers wages."""
     global wb
     global month
   # kuukauden valinta ja tarkastus, että palkka on laskettu
@@ -41,36 +63,13 @@ def main():
             
     return render_template(
               'main.html',
-               title='Palkinnon laske',
+               title='Työntekijän palkkalaskelma',
                text='Laskelma',
                months=months,
                message=message
                 )
 
-@app.route('/wagecount', methods=['post', 'get'])
-def wagecount():
-    """Pääsivusto."""
-    global wb
-    global month
-  # kuukauden valinta ja tarkastus, että palkka on laskettu
-    message='Valitse kuukausi'
-    month=datetime.now().month
-    if request.method == 'POST':
-        month_s = int(request.form.get('month_select'))
-        if month_s < month:
-            month=month_s
-            count(month)
-            message='Palkka laskittu ja on tiedostossa Laskelma'+str(month)+'2019'
-        else:
-            message='Valittu kuukausi ei vielä tullut loppuun'
-            
-    return render_template(
-              'wagecount.html',
-               title='Palkinnon laske',
-               text='Laskelma',
-               months=months,
-               message=message
-                )
+
             
   
 @app.route('/worker/<month>', methods=['GET', 'POST'])
@@ -79,6 +78,7 @@ def worker(month):
     global wb
     
     global wsheet
+    virhe=''
     tv_name='TV'+str(month)+'2019.xlsm'  #työvuorojen laskun excel kirjan nimi
     
     wb = Excel.Workbooks.Open(tv_name)  #avaamme excel kirjan
@@ -108,17 +108,20 @@ def worker(month):
         select = request.form.get('wr_select')
         id= str(select)
         name=namesdict.get(int(select))         #valitun työntekijän sukunimi
-        wage_h=wagesdict.get(int(select))       #valitun työntekijän tuntipalkka
-        lsheet=lb.Sheets(id)                   #valitun työntekijän sivu excel kirjassa
-        #palkan ja kuukauden tietoja työntekijästä
-        hours=lsheet.Range("B41")               
-        product=lsheet.Range("B43").value
-        product=round(product,3)
-        night_h=lsheet.Range("K42")
-        wage_n=lsheet.Range("K43")
-        wage=float(lsheet.Range("J41").value)
-        wage_p=round(lsheet.Range("K41").value,2)
-        wage_t=round(lsheet.Range("K45").value,2)
+        wage_h=round(wagesdict.get(int(select)),2)       #valitun työntekijän tuntipalkka
+        if sh_exist(lb, id):                    #tarkistamme, että sivu on olemassa
+            lsheet=lb.Sheets(id)                   #valitun työntekijän sivu excel kirjassa
+            #palkan ja kuukauden tietoja työntekijästä
+            hours=lsheet.Range("B41").value               
+            product=lsheet.Range("B43").value
+            product=round(product*100,3)
+            night_h=lsheet.Range("K42").value
+            wage_n=round(lsheet.Range("K43").value,2)
+            wage=float(lsheet.Range("J41").value)
+            wage_p=round(lsheet.Range("K41").value,2)
+            wage_t=round(lsheet.Range("K45").value,2)
+        else:
+            virhe='Työntekijän sivu ei löydy. Luoda palkkalaskinnon sivut Home välilehdessä'
    
     return render_template(
         'worker.html',
@@ -135,7 +138,8 @@ def worker(month):
         wage_n=wage_n,
         wage=wage,
         wage_p=wage_p,
-        wage_t=wage_t
+        wage_t=wage_t,
+        virhe=virhe
         )
 
 
@@ -147,7 +151,7 @@ def contact():
         'contact.html',
         title='Contact',
         year=datetime.now().year,
-        message='Your contact page.'
+        message='Ota yhteyttä'
     )
 
 @app.route('/about')
