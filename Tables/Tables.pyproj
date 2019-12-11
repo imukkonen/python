@@ -65,6 +65,9 @@
     <Content Include="Tables\static\scripts\respond.min.js" />
     <Content Include="Tables\static\scripts\_references.js" />
     <Content Include="Tables\templates\about.html" />
+    <Content Include="Tables\templates\paylist.html" />
+    <Content Include="Tables\templates\main.html" />
+    <Content Include="Tables\templates\worker.html" />
     <Content Include="Tables\templates\contact.html" />
     <Content Include="Tables\templates\index.html" />
     <Content Include="Tables\templates\layout.html" />
